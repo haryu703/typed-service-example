@@ -1,0 +1,18 @@
+[env]
+IMAGE_TAG = ""
+IMAGE_VERSION = ""
+
+[config]
+skip_core_tasks = true
+
+[tasks.copy_proto]
+script = ["cp -rf ../proto ."]
+
+[tasks.build]
+script = ["docker build -t ${IMAGE_TAG} ."]
+dependencies = ["copy_proto"]
+
+[tasks.docker_tag]
+script = [
+    "docker tag ${IMAGE_TAG} docker.pkg.github.com/haryu703/typed-service-example/${IMAGE_TAG}:${IMAGE_VERSION}"
+]

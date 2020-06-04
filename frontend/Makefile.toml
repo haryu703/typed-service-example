@@ -1,0 +1,5 @@
+extend = "../base_makefile.toml"
+
+[env]
+IMAGE_TAG = "tse-frontend"
+IMAGE_VERSION = "v0.1.0"

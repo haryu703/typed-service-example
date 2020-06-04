@@ -1,0 +1,37 @@
+[config]
+skip_core_tasks = true
+
+[env]
+CARGO_MAKE_WORKSPACE_EMULATION = true
+CARGO_MAKE_CRATE_WORKSPACE_MEMBERS = [
+    "backend",
+    "frontend",
+]
+
+[tasks.deploy]
+workspace = false
+script = [
+    "kubectl apply -f istio/"
+]
+
+[tasks.set_docker_env]
+workspace = false
+script = [
+    "eval $(minikube docker-env)"
+]
+
+[tasks.show_uri]
+workspace = false
+script = [
+'''
+export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
+export TCP_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp")].nodePort}')
+
+export INGRESS_HOST=$(minikube ip)
+
+export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+
+echo http://$GATEWAY_URL
+'''
+]
